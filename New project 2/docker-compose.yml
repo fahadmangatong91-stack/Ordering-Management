@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: oms
+      POSTGRES_USER: oms_user
+      POSTGRES_PASSWORD: oms_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oms_user -d oms"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://oms_user:oms_password@postgres:5432/oms
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

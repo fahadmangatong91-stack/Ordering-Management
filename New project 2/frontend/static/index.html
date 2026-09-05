@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ordering Management System</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <section id="loginScreen" class="login-screen">
+      <form id="loginForm" class="login-card">
+        <div class="brand login-brand">
+          <div class="brand-mark" aria-hidden="true">OM</div>
+          <div>
+            <strong>Orders</strong>
+            <span>Management</span>
+          </div>
+        </div>
+        <div>
+          <h1>Sign In</h1>
+          <p>Use your assigned account to continue.</p>
+        </div>
+        <div class="field">
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" required />
+        </div>
+        <button class="primary-button full-width" type="submit">Sign In</button>
+      </form>
+    </section>
+
+    <div id="appShell" class="app-shell hidden">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">OM</div>
+          <div>
+            <strong>Orders</strong>
+            <span>Management</span>
+          </div>
+        </div>
+        <nav class="nav-tabs" aria-label="Main">
+          <button class="nav-tab active" data-view="dashboard">Dashboard</button>
+          <button class="nav-tab" data-view="orders">Orders</button>
+          <button class="nav-tab" data-view="inventory">Inventory</button>
+          <button class="nav-tab" data-view="customers">Customers</button>
+          <button class="nav-tab admin-only" data-view="users">Users</button>
+        </nav>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <h1 id="viewTitle">Dashboard</h1>
+            <p id="viewSubtitle">Today&apos;s operating view</p>
+          </div>
+          <div class="sessionbar">
+            <div class="session-user">
+              <strong id="currentUserName"></strong>
+              <span id="currentUserRole"></span>
+            </div>
+            <button id="refreshButton" class="icon-button" type="button" title="Refresh" aria-label="Refresh">&#8635;</button>
+            <button id="logoutButton" class="ghost-button" type="button">Sign Out</button>
+          </div>
+        </header>
+
+        <section id="dashboardView" class="view active">
+          <div class="stat-grid" id="statsGrid"></div>
+          <div class="split-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Order Flow</h2>
+              </div>
+              <div id="statusList" class="status-list"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Low Stock</h2>
+              </div>
+              <div id="lowStockList" class="compact-list"></div>
+            </section>
+          </div>
+          <section class="panel">
+            <div class="panel-header">
+              <h2>Recent Orders</h2>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Created</th>
+                  </tr>
+                </thead>
+                <tbody id="recentOrdersBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="ordersView" class="view">
+          <div class="toolbar">
+            <div class="field inline-field">
+              <label for="orderSearch">Search</label>
+              <input id="orderSearch" type="search" placeholder="Order or customer" />
+            </div>
+            <div class="field inline-field">
+              <label for="statusFilter">Status</label>
+              <select id="statusFilter">
+                <option value="">All</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="packing">Packing</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <button id="newOrderButton" class="primary-button staff-action" type="button">+ New Order</button>
+          </div>
+          <section class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Updated</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="inventoryView" class="view">
+          <div class="two-column">
+            <section id="productFormPanel" class="panel form-panel admin-only">
+              <div class="panel-header">
+                <h2 id="productFormTitle">Add Product</h2>
+                <button id="clearProductButton" class="ghost-button" type="button">Clear</button>
+              </div>
+              <form id="productForm" class="stacked-form">
+                <input id="productId" type="hidden" />
+                <div class="field">
+                  <label for="productSku">SKU</label>
+                  <input id="productSku" required maxlength="64" />
+                </div>
+                <div class="field">
+                  <label for="productName">Name</label>
+                  <input id="productName" required maxlength="160" />
+                </div>
+                <div class="form-grid">
+                  <div class="field">
+                    <label for="productPrice">Price</label>
+                    <input id="productPrice" type="number" min="0.01" step="0.01" required />
+                  </div>
+                  <div class="field">
+                    <label for="productStock">Stock</label>
+                    <input id="productStock" type="number" min="0" step="1" required />
+                  </div>
+                  <div class="field">
+                    <label for="productReorder">Reorder</label>
+                    <input id="productReorder" type="number" min="0" step="1" required />
+                  </div>
+                </div>
+                <label class="check-row">
+                  <input id="productActive" type="checkbox" checked />
+                  Active
+                </label>
+                <button class="primary-button full-width" type="submit">Save Product</button>
+              </form>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Inventory</h2>
+                <div class="field compact-field">
+                  <label for="productSearch">Search</label>
+                  <input id="productSearch" type="search" placeholder="SKU or name" />
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>SKU</th>
+                      <th>Name</th>
+                      <th>Price</th>
+                      <th>Stock</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="productsBody"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section id="customersView" class="view">
+          <div class="two-column">
+            <section id="customerFormPanel" class="panel form-panel staff-action">
+              <div class="panel-header">
+                <h2>Add Customer</h2>
+              </div>
+              <form id="customerForm" class="stacked-form">
+                <div class="field">
+                  <label for="customerName">Name</label>
+                  <input id="customerName" required maxlength="120" />
+                </div>
+                <div class="field">
+                  <label for="customerEmail">Email</label>
+                  <input id="customerEmail" type="email" maxlength="160" />
+                </div>
+                <div class="field">
+                  <label for="customerPhone">Phone</label>
+                  <input id="customerPhone" maxlength="40" />
+                </div>
+                <div class="field">
+                  <label for="customerAddress">Address</label>
+                  <textarea id="customerAddress" rows="4" maxlength="500"></textarea>
+                </div>
+                <button class="primary-button full-width" type="submit">Save Customer</button>
+              </form>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Customers</h2>
+                <div class="field compact-field">
+                  <label for="customerSearch">Search</label>
+                  <input id="customerSearch" type="search" placeholder="Name, email, phone" />
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Address</th>
+                    </tr>
+                  </thead>
+                  <tbody id="customersBody"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section id="usersView" class="view admin-only">
+          <div class="two-column">
+            <section class="panel form-panel">
+              <div class="panel-header">
+                <h2>Add User</h2>
+              </div>
+              <form id="userForm" class="stacked-form">
+                <div class="field">
+                  <label for="userName">Name</label>
+                  <input id="userName" required maxlength="120" />
+                </div>
+                <div class="field">
+                  <label for="userEmail">Email</label>
+                  <input id="userEmail" type="email" required maxlength="160" />
+                </div>
+                <div class="field">
+                  <label for="userPassword">Password</label>
+                  <input id="userPassword" type="password" required minlength="8" maxlength="200" />
+                </div>
+                <div class="field">
+                  <label for="userRole">Role</label>
+                  <select id="userRole" required>
+                    <option value="staff">Staff</option>
+                    <option value="viewer">Viewer</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <label class="check-row">
+                  <input id="userActive" type="checkbox" checked />
+                  Active
+                </label>
+                <button class="primary-button full-width" type="submit">Save User</button>
+              </form>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Users</h2>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersBody"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="orderDialog" class="order-dialog">
+      <form id="orderForm" method="dialog" class="dialog-card">
+        <div class="dialog-header">
+          <div>
+            <h2>New Order</h2>
+            <p>Create a confirmed order and reserve stock.</p>
+          </div>
+          <button id="closeOrderDialog" class="icon-button" type="button" aria-label="Close" title="Close">&times;</button>
+        </div>
+
+        <div class="field">
+          <label for="orderCustomer">Customer</label>
+          <select id="orderCustomer" required></select>
+        </div>
+
+        <div class="order-lines">
+          <div class="line-heading">
+            <span>Product</span>
+            <span>Qty</span>
+            <span>Line</span>
+          </div>
+          <div id="orderItems"></div>
+          <button id="addItemButton" class="ghost-button" type="button">+ Add Item</button>
+        </div>
+
+        <div class="field">
+          <label for="orderNotes">Notes</label>
+          <textarea id="orderNotes" rows="3" maxlength="1000"></textarea>
+        </div>
+
+        <div class="totals-box">
+          <div><span>Subtotal</span><strong id="orderSubtotal">$0.00</strong></div>
+          <div><span>Tax</span><strong id="orderTax">$0.00</strong></div>
+          <div><span>Total</span><strong id="orderTotal">$0.00</strong></div>
+        </div>
+
+        <div class="dialog-actions">
+          <button class="ghost-button" type="button" id="cancelOrderForm">Cancel</button>
+          <button class="primary-button" type="submit">Create Order</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

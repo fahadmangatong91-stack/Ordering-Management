@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: ordering-management-system
+    env: docker
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: AUTH_SECRET_KEY
+        generateValue: true
+      - key: ACCESS_TOKEN_TTL_SECONDS
+        value: "28800"
+      - key: ENVIRONMENT
+        value: production
+      - key: DEFAULT_ADMIN_EMAIL
+        value: admin@example.com
+      - key: DEFAULT_ADMIN_PASSWORD
+        sync: false
+      - key: DEFAULT_STAFF_EMAIL
+        value: staff@example.com
+      - key: DEFAULT_STAFF_PASSWORD
+        sync: false
+      - key: DEFAULT_VIEWER_EMAIL
+        value: viewer@example.com
+      - key: DEFAULT_VIEWER_PASSWORD
+        sync: false
