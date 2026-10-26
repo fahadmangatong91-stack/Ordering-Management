@@ -22,6 +22,7 @@
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
   background: var(--bg);
   color: var(--text);
   font-family:
@@ -148,6 +149,7 @@ button {
 }
 
 .workspace {
+  min-width: 0;
   padding: 26px;
   overflow-x: hidden;
 }
@@ -509,9 +511,12 @@ tbody tr:hover {
 
 .order-dialog {
   width: min(760px, calc(100vw - 28px));
+  max-width: calc(100vw - 28px);
+  max-height: calc(100vh - 28px);
   border: 0;
   border-radius: 8px;
   padding: 0;
+  overflow-y: auto;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
 }
 
@@ -618,6 +623,8 @@ tbody tr:hover {
   }
 
   .sidebar {
+    width: 100%;
+    min-width: 0;
     position: sticky;
     top: 0;
     z-index: 5;
@@ -630,10 +637,15 @@ tbody tr:hover {
   }
 
   .nav-tabs {
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    display: flex;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 2px;
   }
 
   .nav-tab {
+    flex: 0 0 auto;
+    min-width: 92px;
     text-align: center;
     padding: 0 6px;
   }
@@ -649,10 +661,29 @@ tbody tr:hover {
   }
 }
 
+@media (max-width: 760px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 620px) {
+  .login-screen {
+    padding: 12px;
+  }
+
+  .login-card {
+    padding: 18px;
+  }
+
+  .workspace {
+    padding: 12px;
+  }
+
   .topbar {
     align-items: flex-start;
     flex-direction: column;
+    gap: 12px;
   }
 
   .toolbar,
@@ -661,23 +692,60 @@ tbody tr:hover {
     flex-direction: column;
   }
 
+  .panel {
+    padding: 14px;
+  }
+
+  .toolbar > button {
+    width: 100%;
+  }
+
   .inline-field,
   .compact-field {
     min-width: 100%;
-  }
-
-  .form-grid,
-  .line-heading,
-  .order-item-row {
-    grid-template-columns: 1fr;
   }
 
   .line-heading {
     display: none;
   }
 
-  .line-total {
-    text-align: left;
+  .order-item-row {
+    grid-template-columns: minmax(0, 1fr) 38px;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e7ebef;
+  }
+
+  .order-item-row > .order-product {
+    grid-column: 1;
+  }
+
+  .order-item-row > .remove-item {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .order-item-row > .order-quantity,
+  .order-item-row > .line-total {
+    grid-row: 2;
+  }
+
+  .order-item-row > .order-quantity {
+    grid-column: 1;
+  }
+
+  .order-item-row > .line-total {
+    grid-column: 2;
+    align-self: center;
+    text-align: right;
+  }
+
+  .line-heading {
+    grid-template-columns: 1fr;
+  }
+
+  .dialog-card {
+    padding: 14px;
   }
 
   .dialog-actions {
@@ -693,6 +761,10 @@ tbody tr:hover {
     flex: 1;
     min-width: 0;
     text-align: left;
+  }
+
+  .sessionbar .ghost-button {
+    white-space: nowrap;
   }
 
 }
